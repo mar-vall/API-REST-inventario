@@ -1,7 +1,9 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { CreateProductDto } from "../dtos/product.dto";
 import { UpdateProductDto } from "../dtos/product.dto";
 import { prisma } from "../database/prisma";
+import { ErrorResponse } from "../middlewares/error-response";
+import { ErrorCode } from "../common/error-codes";
 
 export class ProductService {
 
@@ -15,7 +17,7 @@ export class ProductService {
     });
 
     if (existing) {
-      throw new Error("Active product with this name already exists.");
+      throw new ErrorResponse(ErrorCode.DUPLICATE_RESOURCE, "Active product with this name already exists.", 409);
     }
 
     return prisma.product.create({
@@ -40,7 +42,7 @@ export class ProductService {
     });
 
     if (!product) {
-      throw new Error("Product not found.");
+      throw new ErrorResponse(ErrorCode.NOT_FOUND, "Product not found", 404);
     }
 
     return product;
@@ -52,11 +54,11 @@ export class ProductService {
       const existing = await tx.product.findUnique({ where: { id } });
 
       if (!existing) {
-        throw new Error("Product not found.");
+        throw new ErrorResponse(ErrorCode.NOT_FOUND, "Product not found", 404);
       }
 
       if (dto.stock !== undefined && dto.stock < 0) {
-        throw new Error("Stock cannot be negative.");
+        throw new ErrorResponse(ErrorCode.VALIDATION_ERROR, "Stock cannot be negative.", 400);
       }
 
       // Validar duplicado si cambia nombre
@@ -70,7 +72,7 @@ export class ProductService {
         });
 
         if (duplicate) {
-          throw new Error("Another active product with this name exists.");
+          throw new ErrorResponse(ErrorCode.DUPLICATE_RESOURCE, "Another active product with this name exists.", 409);
         }
       }
 
@@ -117,7 +119,7 @@ export class ProductService {
     const product = await prisma.product.findUnique({ where: { id } });
 
     if (!product) {
-      throw new Error("Product not found.");
+      throw new ErrorResponse(ErrorCode.NOT_FOUND, "Product not found", 404);
     }
 
     return prisma.product.update({

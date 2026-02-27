@@ -1,6 +1,8 @@
 import { validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 import { Request, Response, NextFunction } from "express";
+import { ErrorCode } from "../common/error-codes";
+import { ErrorResponse } from "./error-response";
 
 export const validateDto = (DtoClass: any) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -12,10 +14,21 @@ export const validateDto = (DtoClass: any) => {
     });
 
     if (errors.length > 0) {
-      return res.status(400).json({
-        message: "Validation failed",
-        errors,
-      });
+      const details = errors.flatMap((error) =>
+        Object.values(error.constraints || {}).map((msg) => ({
+          field: error.property,
+          issue: msg,
+        }))
+      );
+
+      return next(
+        new ErrorResponse(
+          ErrorCode.VALIDATION_ERROR,
+          "Validation failed.",
+          400,
+          details
+        )
+      );
     }
 
     req.body = dto;

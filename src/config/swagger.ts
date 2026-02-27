@@ -31,7 +31,7 @@ const options: Options = {
             },
             description: {
               type: "string",
-              example: "Laptop de alto rendimiento",
+              example: "Laptop de alto rendimient",
             },
             unit_price: {
               type: "number",
