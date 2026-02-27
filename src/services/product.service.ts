@@ -6,9 +6,7 @@ import { ErrorResponse } from "../middlewares/error-response";
 import { ErrorCode } from "../common/error-codes";
 
 export class ProductService {
-
   async create(dto: CreateProductDto) {
-
     const existing = await prisma.product.findFirst({
       where: {
         name: dto.name,
@@ -17,7 +15,11 @@ export class ProductService {
     });
 
     if (existing) {
-      throw new ErrorResponse(ErrorCode.DUPLICATE_RESOURCE, "Active product with this name already exists.", 409);
+      throw new ErrorResponse(
+        ErrorCode.DUPLICATE_RESOURCE,
+        "Active product with this name already exists.",
+        409,
+      );
     }
 
     return prisma.product.create({
@@ -50,7 +52,6 @@ export class ProductService {
 
   async update(id: string, dto: UpdateProductDto) {
     return prisma.$transaction(async (tx) => {
-
       const existing = await tx.product.findUnique({ where: { id } });
 
       if (!existing) {
@@ -58,7 +59,11 @@ export class ProductService {
       }
 
       if (dto.stock !== undefined && dto.stock < 0) {
-        throw new ErrorResponse(ErrorCode.VALIDATION_ERROR, "Stock cannot be negative.", 400);
+        throw new ErrorResponse(
+          ErrorCode.VALIDATION_ERROR,
+          "Stock cannot be negative.",
+          400,
+        );
       }
 
       // Validar duplicado si cambia nombre
@@ -72,7 +77,11 @@ export class ProductService {
         });
 
         if (duplicate) {
-          throw new ErrorResponse(ErrorCode.DUPLICATE_RESOURCE, "Another active product with this name exists.", 409);
+          throw new ErrorResponse(
+            ErrorCode.DUPLICATE_RESOURCE,
+            "Another active product with this name exists.",
+            409,
+          );
         }
       }
 

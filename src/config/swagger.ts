@@ -126,10 +126,21 @@ const options: Options = {
                 },
                 path: {
                   type: "string",
-                  example: "/v1/users/register",
+                  example: "/api/products/123",
                 },
               },
             },
+          },
+        },
+        ProductHistory: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            productId: { type: "string" },
+            fieldName: { type: "string", example: "unit_price" },
+            oldValue: { type: "string", example: "100.00" },
+            newValue: { type: "string", example: "120.00" },
+            changedAt: { type: "string", format: "date-time" },
           },
         },
       },

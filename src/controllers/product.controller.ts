@@ -4,14 +4,9 @@ import { ProductService } from "../services/product.service";
 const service = new ProductService();
 
 export class ProductController {
-
-  create = async (req: Request, res: Response) => {
-    try {
-      const product = await service.create(req.body);
-      res.status(201).json(product);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message });
-    }
+  async create(req: Request, res: Response) {
+    const product = await service.create(req.body);
+    res.status(201).json(product);
   }
 
   async findAll(_req: Request, res: Response) {
