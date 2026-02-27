@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id        String   @id @default(uuid())
+  name      String
+  description String?
+  unit_price Decimal  @db.Decimal(10,2)
+  stock     Int      @default(0)
+  is_active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems        OrderItem[]
+  inventoryMovements InventoryMovement[]
+  productHistory     ProductHistory[]
+}
+
+model ProductHistory {
+  id         String   @id @default(uuid())
+  productId  String
+  fieldName  String
+  oldValue   String?
+  newValue   String?
+  changedAt  DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id           String   @id @default(uuid())
+  customerName String
+  address      String
+  status       OrderStatus @default(PENDING)
+  notes       String?
+  totalAmount  Decimal  @db.Decimal(10,2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items              OrderItem[]
+  inventoryMovements InventoryMovement[]
+}
+
+model OrderItem {
+  id              String  @id @default(uuid())
+  orderId         String
+  productId       String
+  quantity        Int
+  priceAtPurchase Decimal @db.Decimal(10,2)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model InventoryMovement {
+  id             String   @id @default(uuid())
+  productId      String
+  type           MovementType
+  quantity       Int
+  relatedOrderId String?
+  stockBefore    Int
+  stockAfter     Int
+  reason         String?
+  createdAt      DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+  order   Order?  @relation(fields: [relatedOrderId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum MovementType {
+  IN
+  OUT
+}

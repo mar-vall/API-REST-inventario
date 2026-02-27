@@ -118,3 +118,5 @@ dist
 .pnp.*
 
 .env
+
+/src/generated/prisma
