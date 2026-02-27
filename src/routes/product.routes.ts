@@ -59,6 +59,10 @@ router.get("/", controller.findAll.bind(controller));
  *         description: Product found
  *       404:
  *         description: Product not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/:id", controller.findById.bind(controller));
 router.delete("/:id", controller.delete.bind(controller));

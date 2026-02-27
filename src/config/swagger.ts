@@ -89,9 +89,47 @@ const options: Options = {
         ErrorResponse: {
           type: "object",
           properties: {
-            statusCode: { type: "number", example: 400 },
-            message: { type: "string", example: "Insufficient stock" },
-            error: { type: "string", example: "Bad Request" },
+            error: {
+              type: "object",
+              properties: {
+                code: {
+                  type: "string",
+                  example: "VALIDATION_ERROR",
+                },
+                message: {
+                  type: "string",
+                  example: "Validation failed.",
+                },
+                status: {
+                  type: "integer",
+                  example: 400,
+                },
+                details: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      field: {
+                        type: "string",
+                        example: "email",
+                      },
+                      issue: {
+                        type: "string",
+                        example: "Missing @ symbol",
+                      },
+                    },
+                  },
+                },
+                timestamp: {
+                  type: "string",
+                  format: "date-time",
+                },
+                path: {
+                  type: "string",
+                  example: "/v1/users/register",
+                },
+              },
+            },
           },
         },
       },
