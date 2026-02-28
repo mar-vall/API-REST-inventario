@@ -2,6 +2,7 @@ import { Router } from "express";
 import productRoutes from "./product.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "../config/swagger";
+import inventoryRoutes from "./inventory.routes";
 
 export const router = Router();
 
@@ -16,3 +17,5 @@ router.use(
 );
 
 router.use("/products", productRoutes);
+
+router.use("/inventory", inventoryRoutes);
