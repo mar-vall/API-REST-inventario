@@ -3,6 +3,7 @@ import swaggerJsdoc, { Options } from "swagger-jsdoc";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import "../dtos/inventory.dto";
 import "../dtos/product.dto";
+import "../dtos/order.dto";
 
 const dtoSchemas = validationMetadatasToSchemas({
   classValidatorMetadataStorage: getMetadataStorage(),
@@ -103,6 +104,42 @@ const customSchemas = {
       stock: { type: "integer", example: 15},
     },
   },
+  OrderResponse: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          format: "uuid",
+        },
+        customerName: {
+          type: "string",
+        },
+        address: {
+          type: "string",
+        },
+        notes: {
+          type: "string",
+          nullable: true,
+        },
+        status: {
+          type: "string",
+          enum: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
+        },
+        totalAmount: {
+          type: "number",
+          format: "decimal",
+          example: 120.50,
+        },
+        createdAt: {
+          type: "string",
+          format: "date-time",
+        },
+        updatedAt: {
+          type: "string",
+          format: "date-time",
+        },
+      },
+    },
 };
 
 const schemas = {
