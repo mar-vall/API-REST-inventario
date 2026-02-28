@@ -8,4 +8,6 @@ router.post("/in", controller.increaseStock);
 
 router.post("/out", controller.decreaseStock);
 
+router.get("/:productId/movements", controller.getMovements);
+
 export default router;

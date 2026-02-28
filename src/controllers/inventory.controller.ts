@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { InventoryService } from "../services/inventory.service";
 import { AdjustInventoryDto } from "../dtos/inventory.dto";
+import { MovementType } from "../generated/prisma/client/browser";
+import { ErrorResponse } from "../middlewares/error-response";
+import { ErrorCode } from "../common/error-codes";
 
 export class InventoryController {
   private inventoryService = new InventoryService();
@@ -11,7 +14,7 @@ export class InventoryController {
     const stockAfter = await this.inventoryService.increaseStock(
       dto.productId,
       dto.quantity,
-      dto.reason
+      dto.reason,
     );
 
     return res.status(200).json({
@@ -27,12 +30,39 @@ export class InventoryController {
       dto.productId,
       dto.quantity,
       undefined,
-      dto.reason ?? "Manual adjustment"
+      dto.reason ?? "Manual adjustment",
     );
 
     return res.status(200).json({
       message: "Stock decreased successfully",
       stock: stockAfter,
     });
+  };
+
+  getMovements = async (req: Request, res: Response) => {
+    const productId = Array.isArray(req.params.productId)
+      ? req.params.productId[0]
+      : req.params.productId;
+    const { type } = req.query;
+
+    let movementType: MovementType | undefined;
+
+    if (type) {
+      if (!Object.values(MovementType).includes(type as MovementType)) {
+        throw new ErrorResponse(
+          ErrorCode.BAD_REQUEST,
+          "Invalid movement type",
+          400,
+        );
+      }
+      movementType = type as MovementType;
+    }
+
+    const movements = await this.inventoryService.getMovements(
+      productId,
+      movementType,
+    );
+
+    return res.status(200).json(movements);
   };
 }

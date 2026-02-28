@@ -94,10 +94,15 @@ export class InventoryService {
     return stockAfter;
   }
 
-  async getMovements(productId: string) {
+  async getMovements(productId: string, type?: MovementType) {
     return prisma.inventoryMovement.findMany({
-      where: { productId },
-      orderBy: { createdAt: "desc" },
+      where: {
+        productId,
+        ...(type && { type }),
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
   }
 }
