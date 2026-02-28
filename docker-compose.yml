@@ -13,6 +13,11 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
     build: .
@@ -21,7 +26,8 @@ services:
     ports:
       - "${PORT}:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       PORT: ${PORT}
       NODE_ENV: ${NODE_ENV}
@@ -32,7 +38,6 @@ services:
       DB_NAME: ${DB_NAME}
     volumes:
       - .:/app
-      - /app/node_modules
     command: npm run dev
 
 volumes:
