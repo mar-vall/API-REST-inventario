@@ -1,15 +1,10 @@
 import { Router } from "express";
 import { InventoryController } from "../controllers/inventory.controller";
+import { AdjustInventoryDto, GetMovementsQueryDto } from "../dtos/inventory.dto";
+import { validateDto } from "../middlewares/validate.dto";
 
 const router = Router();
 const controller = new InventoryController();
-
-/**
- * @swagger
- * tags:
- *   name: Inventory
- *   description: Inventory management
- */
 
 /**
  * @swagger
@@ -22,7 +17,7 @@ const controller = new InventoryController();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/AdjustInventory'
+ *             $ref: '#/components/schemas/AdjustInventoryDto'
  *     responses:
  *       200:
  *         description: Stock increased successfully
@@ -37,7 +32,11 @@ const controller = new InventoryController();
  *           schema:
  *             $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/in", controller.increaseStock);
+router.post(
+  "/in",
+  validateDto(AdjustInventoryDto),
+  controller.increaseStock
+);
 
 /**
  * @swagger
@@ -50,14 +49,18 @@ router.post("/in", controller.increaseStock);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/AdjustInventory'
+ *             $ref: '#/components/schemas/AdjustInventoryDto'
  *     responses:
  *       200:
  *         description: Stock decreased successfully
  *       400:
  *         description: Validation error or insufficient stock
  */
-router.post("/out", controller.decreaseStock);
+router.post(
+  "/out",
+  validateDto(AdjustInventoryDto),
+  controller.decreaseStock
+);
 
 /**
  * @swagger
@@ -82,6 +85,10 @@ router.post("/out", controller.decreaseStock);
  *       200:
  *         description: List of inventory movements
  */
-router.get("/:productId/movements", controller.getMovements);
+router.get(
+  "/:productId/movements",
+  validateDto(GetMovementsQueryDto),
+  controller.getMovements
+);
 
 export default router;

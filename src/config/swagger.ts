@@ -1,6 +1,8 @@
 import { getMetadataStorage } from "class-validator";
 import swaggerJsdoc, { Options } from "swagger-jsdoc";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
+import "../dtos/inventory.dto";
+import "../dtos/product.dto";
 
 const dtoSchemas = validationMetadatasToSchemas({
   classValidatorMetadataStorage: getMetadataStorage(),
@@ -92,6 +94,13 @@ const customSchemas = {
       stockAfter: { type: "integer" },
       reason: { type: "string" },
       created_at: { type: "string", format: "date-time" },
+    },
+  },
+  AdjustInventoryResponse: {
+    type: "object",
+    properties: {
+      message: { type: "string", example: "Stock increased successfully" },
+      stock: { type: "integer", example: 15},
     },
   },
 };
