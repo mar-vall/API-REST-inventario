@@ -143,6 +143,39 @@ const options: Options = {
             changedAt: { type: "string", format: "date-time" },
           },
         },
+        AdjustInventory: {
+          type: "object",
+          required: ["productId", "quantity"],
+          properties: {
+            productId: {
+              type: "string",
+              format: "uuid",
+              example: "550e8400-e29b-41d4-a716-446655440000",
+            },
+            quantity: {
+              type: "integer",
+              minimum: 1,
+              example: 10,
+            },
+            reason: {
+              type: "string",
+              example: "Purchase from supplier",
+            },
+          },
+        },
+        InventoryMovement: {
+          type: "object",
+          properties: {
+            id: { type: "string", format: "uuid" },
+            productId: { type: "string", format: "uuid" },
+            type: { type: "string", enum: ["IN", "OUT"] },
+            quantity: { type: "integer" },
+            stockBefore: { type: "integer" },
+            stockAfter: { type: "integer" },
+            reason: { type: "string" },
+            created_at: { type: "string", format: "date-time" },
+          },
+        },
       },
     },
   },
