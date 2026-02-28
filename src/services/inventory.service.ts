@@ -63,7 +63,17 @@ export class InventoryService {
       throw new ErrorResponse(ErrorCode.NOT_FOUND, "Product not found", 404);
     }
 
-    if (product.stock < quantity) {
+    const updated = await db.product.updateMany({
+      where: {
+        id: productId,
+        stock: { gte: quantity },
+      },
+      data: {
+        stock: { decrement: quantity },
+      },
+    });
+
+    if (updated.count === 0) {
       throw new ErrorResponse(
         ErrorCode.BUSINESS_RULE_VIOLATION,
         "Insufficient stock",
@@ -71,13 +81,7 @@ export class InventoryService {
       );
     }
 
-    const stockBefore = product.stock;
-    const stockAfter = stockBefore - quantity;
-
-    await db.product.update({
-      where: { id: productId },
-      data: { stock: stockAfter },
-    });
+    const stockAfter = product.stock - quantity;
 
     await db.inventoryMovement.create({
       data: {
@@ -85,7 +89,7 @@ export class InventoryService {
         type: MovementType.OUT,
         quantity,
         relatedOrderId,
-        stockBefore,
+        stockBefore: product.stock,
         stockAfter,
         reason,
       },

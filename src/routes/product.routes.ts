@@ -170,6 +170,7 @@ router.delete("/:id", controller.delete.bind(controller));
  *         required: true
  *         schema:
  *           type: string
+ *           alias: productId
  *     responses:
  *       200:
  *         description: Product history retrieved
