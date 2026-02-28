@@ -20,7 +20,7 @@ const controller = new OrderController();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreateOrderDto'
+ *             $ref: '#/components/schemas/CreateOrderRequest'
  *
  *     responses:
  *       201:
@@ -51,6 +51,73 @@ router.post(
   "/",
   validateDto(CreateOrderDto),
   controller.create
+);
+
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     summary: Get all orders
+ *     tags:
+ *       - Orders
+ *
+ *     responses:
+ *       200:
+ *         description: List of orders
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/OrderWithItemsResponse'
+ *
+ *       500:
+ *         description: Internal server error
+ */
+router.get(
+  "/",
+  controller.getAll
+);
+
+/**
+ * @swagger
+ * /orders/{id}:
+ *   get:
+ *     summary: Get order by ID
+ *
+ *     tags:
+ *       - Orders
+ *
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Order ID
+ *
+ *     responses:
+ *       200:
+ *         description: Order found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OrderWithItemsResponse'
+ *
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *
+ *       500:
+ *         description: Internal server error
+ */
+router.get(
+  "/:id",
+  controller.getById
 );
 
 export default router;

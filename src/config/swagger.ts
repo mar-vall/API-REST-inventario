@@ -101,45 +101,100 @@ const customSchemas = {
     type: "object",
     properties: {
       message: { type: "string", example: "Stock increased successfully" },
-      stock: { type: "integer", example: 15},
+      stock: { type: "integer", example: 15 },
     },
   },
-  OrderResponse: {
-      type: "object",
-      properties: {
-        id: {
-          type: "string",
-          format: "uuid",
-        },
-        customerName: {
-          type: "string",
-        },
-        address: {
-          type: "string",
-        },
-        notes: {
-          type: "string",
-          nullable: true,
-        },
-        status: {
-          type: "string",
-          enum: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
-        },
-        totalAmount: {
-          type: "number",
-          format: "decimal",
-          example: 120.50,
-        },
-        createdAt: {
-          type: "string",
-          format: "date-time",
-        },
-        updatedAt: {
-          type: "string",
-          format: "date-time",
+  CreateOrderRequest: {
+    type: "object",
+    required: ["customerName", "address", "items"],
+    properties: {
+      customerName: {
+        type: "string",
+        example: "Mariana Vallejos",
+      },
+      address: {
+        type: "string",
+        example: "Av. América #123, Cochabamba",
+      },
+      notes: {
+        type: "string",
+        example: "Entregar en horario de oficina",
+      },
+      items: {
+        type: "array",
+        minItems: 1,
+        items: {
+          $ref: "#/components/schemas/OrderItemDto",
         },
       },
     },
+  },
+  OrderResponse: {
+    type: "object",
+    properties: {
+      id: {
+        type: "string",
+        format: "uuid",
+      },
+      customerName: {
+        type: "string",
+      },
+      address: {
+        type: "string",
+      },
+      notes: {
+        type: "string",
+        nullable: true,
+      },
+      status: {
+        type: "string",
+        enum: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
+      },
+      totalAmount: {
+        type: "number",
+        format: "decimal",
+        example: 120.5,
+      },
+      createdAt: {
+        type: "string",
+        format: "date-time",
+      },
+      updatedAt: {
+        type: "string",
+        format: "date-time",
+      },
+    },
+  },
+  OrderItemResponse: {
+    type: "object",
+    properties: {
+      id: { type: "string", format: "uuid" },
+      orderId: { type: "string", format: "uuid" },
+      productId: { type: "string", format: "uuid" },
+      quantity: { type: "integer" },
+      priceAtPurchase: {
+        type: "number",
+        format: "decimal",
+        example: 50.0,
+      },
+    },
+  },
+  OrderWithItemsResponse: {
+    allOf: [
+      { $ref: "#/components/schemas/OrderResponse" },
+      {
+        type: "object",
+        properties: {
+          items: {
+            type: "array",
+            items: {
+              $ref: "#/components/schemas/OrderItemResponse",
+            },
+          },
+        },
+      },
+    ],
+  },
 };
 
 const schemas = {

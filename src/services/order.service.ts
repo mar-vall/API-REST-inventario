@@ -69,4 +69,30 @@ export class OrderService {
       return order;
     });
   }
+
+  async getAll() {
+    return prisma.order.findMany({
+      include: {
+        items: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+
+  async getById(id: string) {
+    const order = await prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!order) {
+      throw new ErrorResponse(ErrorCode.NOT_FOUND, "Order not found", 404);
+    }
+
+    return order;
+  }
 }
